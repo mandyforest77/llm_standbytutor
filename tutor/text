@@ -1,0 +1,19 @@
+
+if "user_api" in st.session_state:
+    if st.button("뉴스 가져오기 및 요약"):
+        with st.spinner("뉴스를 크롤링하고 요약 중입니다..."):
+            news_items = crawl_naver_economy_news(15)
+
+            for news_item in news_items:
+                summary = summarize_news(news_item) # Pass full content to summarize
+                print(summary)
+                st.info(f"""💡 제목: {summary[0]}\n\n요약:{summary[2]}\n\n링크:{summary[1]}""" )
+                
+        st.download_button(
+                label="텍스트 파일 다운로드",
+                data="\n\n".join([f"제목: {summarize_news(news_item)[0]}\n요약: {summarize_news(news_item)[2]}\n링크: {summarize_news(news_item)[1]}" for news_item in news_items]),
+                file_name="Finance_News_Summary.txt",
+                mime="text/plain"
+            )
+else:
+    st.info("API Key가 등록되지 않았습니다. 첫 페이지에서 등록해주세요.")
