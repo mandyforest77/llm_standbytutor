@@ -2,8 +2,8 @@ langchain-openai
 pandas
 streamlit
 openai
-langchain
+langchain>=0.1.0
+langchain-community
 langchain-core
 altair<5
 standard-imghdr
-langchain-community
