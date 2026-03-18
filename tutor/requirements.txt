@@ -6,3 +6,4 @@ langchain
 langchain-core
 altair<5
 standard-imghdr
+langchain-community
