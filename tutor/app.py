@@ -26,7 +26,8 @@ import streamlit as st
 from PIL import Image
 import base64
 
-os.environ["OPENAI_API_KEY"]="api_key"
+api_key = st.secrets["API_KEY"]
+os.environ["OPENAI_API_KEY"]=api_key
 os.environ["LANGCHAIN_TRACING_V2"] = "false"
 
 

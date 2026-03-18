@@ -28,6 +28,7 @@ from langchain_experimental.agents.agent_toolkits import create_pandas_dataframe
 
 # file_path = "Practice GRE.pdf"
 
+st.title("Excel SQL")
 
 uploaded_file = st.file_uploader("Upload a .csv or Excel file", type=["xls","xlsx","csv"])
 if "user_api" in st.session_state:
