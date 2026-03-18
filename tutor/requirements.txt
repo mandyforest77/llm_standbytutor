@@ -4,3 +4,4 @@ streamlit
 openai
 langchain
 langchain-core
+altair<5
