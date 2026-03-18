@@ -4,6 +4,3 @@ openai
 langchain
 langchain-openai
 langchain-core
-langchain-agents
-langchain-chains
-langchaing-community
