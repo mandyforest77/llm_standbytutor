@@ -49,7 +49,10 @@ response = model.invoke([HumanMessage(content="우리의 손님이 오셨으니,
 
 # img = Image.open("standbytutor_main.png")
 # st.image(img, use_container_width=True)
-with open("standbytutor_main.JPG", "rb") as f:
+current_dir = os.path.dirname(os.path.abspath(__file__))
+image_path = os.path.join(current_dir, 'standbytutor_main.JPG')
+
+with open(image_path, "rb") as f:
     data = f.read()
     img= base64.b64encode(data).decode()
 
