@@ -47,9 +47,10 @@ model = ChatOpenAI(model_name="gpt-4o")
 response = model.invoke([HumanMessage(content="우리의 손님이 오셨으니, 친절한 인사말을 해주세요. 저한테 대답하지 말고, 손님께 인사해주세요.")])
 # st.info(response.content) # 인사말을 info 박스에 담아 강조
 
-# img = Image.open("standbytutor_main.png")
-# st.image(img, use_container_width=True)
-with open("standbytutor_main.JPG", "rb") as f:
+current_dir = os.path.dirname(os.path.abspath(__file__))
+image_path = os.path.join(current_dir, 'standbytutor_main.JPG')
+
+with open(image_path, "rb") as f:
     data = f.read()
     img= base64.b64encode(data).decode()
 
