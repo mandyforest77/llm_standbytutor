@@ -8,3 +8,4 @@ langchain-core
 altair<5
 standard-imghdr
 beautifulsoup4
+langchain-experimental
