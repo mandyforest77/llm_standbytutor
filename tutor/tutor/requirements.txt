@@ -1,9 +1,13 @@
 langchain-openai
 pandas
-streamlit
+streamlit>=1.23.0
 openai
 langchain>=0.1.0
 langchain-community
 langchain-core
 altair<5
 standard-imghdr
+beautifulsoup4
+langchain-experimental
+tabulate
+chromadb

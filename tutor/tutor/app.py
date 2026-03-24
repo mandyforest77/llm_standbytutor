@@ -59,11 +59,22 @@ with open(image_path, "rb") as f:
 
 # --- 3. 컬럼 분할 및 이미지 표시 ---
 # 2분할 컬럼 생성
+st.markdown(
+    """
+    <style>
+    [data-testid="stImage"] img {
+        border-radius: 20px; /* 둥글기 정도 설정 (px 또는 %) */
+        /* 필요시 테두리 추가: border: 2px solid #ddd; */
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 col1, col2 = st.columns(2)
 
 with col1:
-    st.image(f"data:image/jpg;base64,{img}", use_container_width=True)
+    st.image(f"data:image/jpg;base64,{img}", width=True)
 
 with col2:
     # CSS를 사용하여 col2의 내용을 아래로 정렬
