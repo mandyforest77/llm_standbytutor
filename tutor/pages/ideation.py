@@ -28,8 +28,12 @@ dalle = DallEAPIWrapper(model="dall-e-3")
 # 3. 이미지 생성 실행
 # 결과값으로 이미지 파일이 아닌 '이미지 URL' 문자열이 반환됩니다.
 prompt = st.text_input("이미지 생성 실행을 위해 엔터를 눌러주세요.")
-if prompt:
-    image_url = dalle.run(prompt)
+if "user_api" in st.session_state:  
+    if prompt:
+        image_url = dalle.run(prompt)
 
-# 4. 결과 출력
-    st.image(image_url)
+    # 4. 결과 출력
+        st.image(image_url)
+
+else:
+    st.info("API Key가 등록되지 않았습니다. 첫 페이지에서 등록해주세요.")
