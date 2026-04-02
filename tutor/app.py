@@ -44,7 +44,7 @@ st.markdown("""
 st.markdown('<h1 class="beige-title">StandbyTutor 🤖</h1>', unsafe_allow_html=True)
 
 model = ChatOpenAI(model_name="gpt-4o")
-response = model.invoke([HumanMessage(content="우리의 손님이 오셨으니, 친절한 인사말을 해주세요. 저한테 대답하지 말고, 손님께 인사해주세요.")])
+# response = model.invoke([HumanMessage(content="우리의 손님이 오셨으니, 친절한 인사말을 해주세요. 저한테 대답하지 말고, 손님께 인사해주세요.")])
 # st.info(response.content) # 인사말을 info 박스에 담아 강조
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -75,16 +75,16 @@ col1, col2 = st.columns(2)
 with col1:
     st.image(f"data:image/jpg;base64,{img}", use_column_width=True)
 
-with col2:
-    # CSS를 사용하여 col2의 내용을 아래로 정렬
-    st.markdown(
-        f"""
-        <div style="display: flex; flex-direction: column; justify-content: flex-end; height: 100%; min-height: 300px;">
-            <p style="margin: 0;">{response.content}</p>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+# with col2:
+#     # CSS를 사용하여 col2의 내용을 아래로 정렬
+#     st.markdown(
+#         f"""
+#         <div style="display: flex; flex-direction: column; justify-content: flex-end; height: 100%; min-height: 300px;">
+#             <p style="margin: 0;">{response.content}</p>
+#         </div>
+#         """,
+#         unsafe_allow_html=True
+#     )
 
 
 
