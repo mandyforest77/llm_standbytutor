@@ -3,7 +3,7 @@ name: CI Automation
 # 코드가 GitHub의 main 브랜치에 push(업로드)될 때 이 자동화가 켜집니다.
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "dev" ]
 
 jobs:
   build-and-push:
@@ -22,7 +22,7 @@ jobs:
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
     # 3. 도커 이미지를 자동으로 빌드하고 창고로 업로드(Push)합니다.
-    - name: Build and Push Docker Image
+    - name: Build and Push Docker Imageig
       uses: docker/build-push-action@v5
       with:
         context: .
