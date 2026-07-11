@@ -30,14 +30,8 @@ jobs:
           push: true
           # docker_hub_아이디/레포지토리명:태그 형식으로 저장됩니다.
           tags: mandyforest77/standbytutor:latest
-          
-      # [추가] 이전 도커 엔진의 꼬인 세션을 강제로 초기화합니다 (공식 버그 해결책)
-      - name: Clear Docker Login Cache
-        run: docker logout
 
-      # 2. Docker Hub 로그인을 위한 설정 수행
+      # 2. Docker Hub 로그인을 위한 설정 수행 (플러그인을 쓰지 않고 순수 명령어로 로그인)
       - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: mandyforest77
-          password: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u mandyforest77 --password-stdin
