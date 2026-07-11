@@ -30,4 +30,3 @@ jobs:
           push: true
           # docker_hub_아이디/레포지토리명:태그 형식으로 저장됩니다.
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/standbytutor:latest
-# retry test 
