@@ -9,10 +9,6 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: read
-      id-token: write
-
     steps:
       # 1. GitHub 저장소의 소스코드를 Actions 서버로 가져옴
       - name: Checkout Code
@@ -34,3 +30,11 @@ jobs:
           push: true
           # docker_hub_아이디/레포지토리명:태그 형식으로 저장됩니다.
           tags: mandyforest77/standbytutor:latest
+      
+      - name: Secret Check Test
+        run: |
+          if [ -z "${{ secrets.DOCKER_PASSWORD }}" ]; then
+            echo "🚨 경고: 깃허브 금고에서 시크릿을 아예 못 가져오고 있습니다! 빈 값입니다."
+          else
+            echo "🍏 성공: 금고에서 값을 가져왔습니다. (보안상 화면에는 ***로 출력됩니다: ${{ secrets.DOCKER_PASSWORD }})"
+          fi
