@@ -9,6 +9,10 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      id-token: write
+
     steps:
       # 1. GitHub 저장소의 소스코드를 Actions 서버로 가져옴
       - name: Checkout Code
