@@ -1,0 +1,31 @@
+name: CI Automation
+
+# 코드가 GitHub의 main 브랜치에 push(업로드)될 때 이 자동화가 켜집니다.
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest # GitHub이 빌드용 무료 리눅스 컴퓨터를 빌려줍니다.
+    
+    steps:
+    # 1. GitHub 컴퓨터로 내 소스코드를 원격으로 복사해옵니다.
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # 2. 아까 숨겨둔 Secrets 정보로 내 도커 허브 창고에 로그인합니다.
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+    # 3. 도커 이미지를 자동으로 빌드하고 창고로 업로드(Push)합니다.
+    - name: Build and Push Docker Image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        # 💡 중요: '본인도커허브아이디' 자리에 내 진짜 Docker Hub ID를 소문자로 고쳐 쓰세요!
+        tags: mandyforest77/my-own-app:latest
