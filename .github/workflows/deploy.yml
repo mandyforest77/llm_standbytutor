@@ -31,5 +31,15 @@ jobs:
           # docker_hub_아이디/레포지토리명:태그 형식으로 저장됩니다.
           tags: mandyforest77/standbytutor:latest
 
+          # 2. Docker Hub 로그인을 위한 설정 수행
+      - name: Log in to Docker Hub Securely
+        env:
+          # 금고에서 꺼낸 값을 시스템이 건드리지 못하게 환경 변수에 격리합니다.
+          DOCKER_SECURE_PASS: ${{ secrets.MY_SECRET_TOKEN_KEY }}
+        run: |
+          # 변수 왜곡 없이 정확히 문자열만 추출하여 도커 엔진에 주입합니다.
+          echo "$DOCKER_SECURE_PASS" | docker login -u mandyforest77 --password-stdin
+
+
     
 
