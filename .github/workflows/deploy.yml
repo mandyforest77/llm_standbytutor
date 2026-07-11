@@ -30,11 +30,14 @@ jobs:
           push: true
           # docker_hub_아이디/레포지토리명:태그 형식으로 저장됩니다.
           tags: mandyforest77/standbytutor:latest
-      
-      - name: Secret Check Test
-        run: |
-          if [ -z "${{ secrets.DOCKER_PASSWORD }}" ]; then
-            echo "🚨 경고: 깃허브 금고에서 시크릿을 아예 못 가져오고 있습니다! 빈 값입니다."
-          else
-            echo "🍏 성공: 금고에서 값을 가져왔습니다. (보안상 화면에는 ***로 출력됩니다: ${{ secrets.DOCKER_PASSWORD }})"
-          fi
+          
+      # [추가] 이전 도커 엔진의 꼬인 세션을 강제로 초기화합니다 (공식 버그 해결책)
+      - name: Clear Docker Login Cache
+        run: docker logout
+
+      # 2. Docker Hub 로그인을 위한 설정 수행
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: mandyforest77
+          password: ${{ secrets.DOCKER_PASSWORD }}
