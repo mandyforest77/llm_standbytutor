@@ -1,6 +1,7 @@
 import os
 import streamlit as st
-from langchain_community.utilities import DallEAPIWrapper # 기존 import문
+from langchain_openai import OpenAIImagesAPIWrapper as DallEAPIWrapper
+
 
 # --- [추가] 다른 페이지에서도 API Key를 연동하기 위한 코드 ---
 if "API_KEY" in st.secrets:
