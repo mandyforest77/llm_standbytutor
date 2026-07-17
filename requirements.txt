@@ -11,3 +11,5 @@ beautifulsoup4
 langchain-experimental
 tabulate
 chromadb
+langchain-openai
+langchain-community
