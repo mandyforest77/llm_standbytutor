@@ -1,39 +1,19 @@
+import os
 import streamlit as st
-import requests
-from bs4 import BeautifulSoup
-from typing import Dict, TypedDict, List, Annotated
-from langgraph.graph import StateGraph, START, END
-# from IPython.display import display, HTML, Image
-from langchain_core.messages import HumanMessage, AIMessage,SystemMessage, BaseMessage
-import numpy as np
-from langchain_openai.chat_models import ChatOpenAI
-from langgraph.prebuilt import ToolNode, tools_condition
-from operator import add # Import add from operator
-from langchain.tools import tool # Import the tool decorator
-from langgraph.prebuilt import tools_condition
-from dotenv import load_dotenv
-import time
-from langchain_openai import ChatOpenAI
-from langchain_core.prompts import PromptTemplate
-from langchain_classic.chains import LLMChain
-from langchain_core.documents import Document # Added import
-from langchain_classic.chains.summarize import load_summarize_chain # Added import
-from langchain_community.utilities.dalle_image_generator import DallEAPIWrapper
+from langchain_community.utilities import DallEAPIWrapper # 기존 import문
 
-st.set_page_config(page_title="Ideation", layout="wide")
-# 2. 클래스 초기화
-# model을 "dall-e-3"로 지정하면 더 고품질의 이미지가 생성됩니다.
-dalle = DallEAPIWrapper(model="dall-e-3")
-
-# 3. 이미지 생성 실행
-# 결과값으로 이미지 파일이 아닌 '이미지 URL' 문자열이 반환됩니다.
-prompt = st.text_input("이미지 생성 실행을 위해 엔터를 눌러주세요.")
-if "user_api" in st.session_state:  
-    if prompt:
-        image_url = dalle.run(prompt)
-
-    # 4. 결과 출력
-        st.image(image_url)
-
+# --- [추가] 다른 페이지에서도 API Key를 연동하기 위한 코드 ---
+if "API_KEY" in st.secrets:
+    api_key = st.secrets["API_KEY"]
 else:
-    st.info("API Key가 등록되지 않았습니다. 첫 페이지에서 등록해주세요.")
+    api_key = st.session_state.get("user_api", "")
+
+if api_key:
+    os.environ["OPENAI_API_KEY"] = api_key
+else:
+    st.error("🔒 OpenAI API Key가 없습니다. 메인 페이지에서 Key를 먼저 입력해주세요.")
+    st.stop() # API Key가 없으면 이후 코드 실행을 중단합니다.
+# --------------------------------------------------------
+
+# 기존 26번째 줄 코드
+dalle = DallEAPIWrapper(model="dall-e-3")
