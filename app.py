@@ -1,104 +1,95 @@
 import os
-from langchain_openai import ChatOpenAI
-from langchain.agents.structured_output import ToolStrategy
-from langchain.tools import tool
-from langchain.chat_models import init_chat_model
-from langchain.agents import create_agent
-from typing import List, Dict, Any, Literal
-import requests
-from langgraph.checkpoint.memory import InMemorySaver
-from langchain_core.messages import HumanMessage
-from langchain.agents.middleware import LLMToolEmulator, TodoListMiddleware, HumanInTheLoopMiddleware
-from pydantic import BaseModel, Field
-from dataclasses import dataclass
-from langchain.agents.middleware import before_model, wrap_model_call
-from langchain_core.messages import HumanMessage
-from langchain_community.document_loaders import TextLoader
-from langchain_text_splitters import CharacterTextSplitter, RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import Chroma
-from langchain_openai.embeddings import OpenAIEmbeddings
-from langchain_core.output_parsers import StrOutputParser
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_community.document_loaders import PyPDFLoader
-from langchain_classic.chains.retrieval import create_retrieval_chain
-from langchain_classic.chains.combine_documents import create_stuff_documents_chain
 import streamlit as st
-from PIL import Image
 import base64
+from langchain_openai import ChatOpenAI
+from langchain_core.messages import HumanMessage
 
-api_key = st.secrets["API_KEY"]
-os.environ["OPENAI_API_KEY"]=api_key
+# --- 0. Streamlit 설정 및 API 키 처리 ---
+# [필수 고침] st.secrets에 API_KEY가 없을 경우를 대비한 안전 장치
+if "API_KEY" in st.secrets:
+    api_key = st.secrets["API_KEY"]
+else:
+    # secrets에 없을 경우, 하단 text_input에서 입력한 값을 사용하도록 연동
+    api_key = st.session_state.get("user_api", "")
+
+if api_key:
+    os.environ["OPENAI_API_KEY"] = api_key
 os.environ["LANGCHAIN_TRACING_V2"] = "false"
 
 
-# 페이지 설정
+# --- 1. UI 스타일 및 타이틀 ---
 st.markdown("""
     <style>
     .beige-title {
-        color: #008080 !important; /* !important를 추가해 우선순위를 높임 */
+        color: #008080 !important;
+    }
+    [data-testid="stImage"] img {
+        border-radius: 20px;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# 2. HTML 적용
 st.markdown('<h1 class="beige-title">StandbyTutor 🤖</h1>', unsafe_allow_html=True)
 
-model = ChatOpenAI(model_name="gpt-4o")
-# response = model.invoke([HumanMessage(content="우리의 손님이 오셨으니, 친절한 인사말을 해주세요. 저한테 대답하지 말고, 손님께 인사해주세요.")])
-# st.info(response.content) # 인사말을 info 박스에 담아 강조
 
+# --- 2. LLM 모델 초기화 & 인사말 ---
+# API 키가 등록된 상태에서만 모델이 작동하도록 감싸야 에러가 안 납니다.
+response_content = "안녕하세요! StandbyTutor에 오신 것을 환영합니다. 왼쪽 사이드바나 하단에서 API Key를 입력하시면 튜터링 서비스가 시작됩니다."
+
+if api_key:
+    try:
+        model = ChatOpenAI(model_name="gpt-4o")
+        response = model.invoke([
+            HumanMessage(content="우리의 손님이 오셨으니, 친절한 인사말을 해주세요. 저한테 대답하지 말고, 손님께 인사해주세요.")
+        ])
+        response_content = response.content
+        st.info(response_content) # 주석 해제하여 인사말 출력
+    except Exception as e:
+        st.error(f"오류가 발생했습니다: {e}")
+else:
+    st.info(response_content)
+
+
+# --- 3. 메인 이미지 처리 ---
 current_dir = os.path.dirname(os.path.abspath(__file__))
 image_path = os.path.join(current_dir, 'standbytutor_main.JPG')
 
-with open(image_path, "rb") as f:
-    data = f.read()
-    img= base64.b64encode(data).decode()
+# 이미지 파일 존재 여부 확인 후 base64 인코딩
+if os.path.exists(image_path):
+    with open(image_path, "rb") as f:
+        data = f.read()
+        img = base64.b64encode(data).decode()
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        # Streamlit 최신 버전 규격 반영 (use_column_width=True 대신 use_container_width=True)
+        st.image(f"data:image/jpg;base64,{img}", use_container_width=True)
+    
+    with col2:
+        st.markdown(
+            f"""
+            <div style="display: flex; flex-direction: column; justify-content: flex-end; height: 100%; min-height: 200px;">
+                <p style="margin: 0; font-size: 16px; font-weight: bold;">{response_content}</p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+else:
+    st.warning("⚠️ 'standbytutor_main.JPG' 이미지를 찾을 수 없습니다. 파일명을 확인해 주세요.")
 
 
-# --- 3. 컬럼 분할 및 이미지 표시 ---
-# 2분할 컬럼 생성
-st.markdown(
-    """
-    <style>
-    [data-testid="stImage"] img {
-        border-radius: 20px; /* 둥글기 정도 설정 (px 또는 %) */
-        /* 필요시 테두리 추가: border: 2px solid #ddd; */
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-
-col1, col2 = st.columns(2)
-
-with col1:
-    st.image(f"data:image/jpg;base64,{img}", use_column_width=True)
-
-# with col2:
-#     # CSS를 사용하여 col2의 내용을 아래로 정렬
-#     st.markdown(
-#         f"""
-#         <div style="display: flex; flex-direction: column; justify-content: flex-end; height: 100%; min-height: 300px;">
-#             <p style="margin: 0;">{response.content}</p>
-#         </div>
-#         """,
-#         unsafe_allow_html=True
-#     )
-
-
-
-# 사이드바 설정
+# --- 4. 사이드바 및 API Key 입력 세션 ---
 st.sidebar.success("위의 필요한 기능을 선택하세요.")
 
-# --- API Key 입력 세션 (가장 위로 올리는 것이 좋습니다) ---
-user_api = st.text_input("OpenAI API Key를 입력해주세요", type="password")
+# 사용자가 직접 입력할 수 있는 입력창
+user_api = st.text_input("OpenAI API Key를 입력해주세요", type="password", value=st.session_state.get("user_api", ""))
+
 if user_api:
     st.session_state["user_api"] = user_api
     st.sidebar.success("API Key가 저장되었습니다.")
+    # 사용자가 값을 입력하면 즉시 페이지를 새로고침하여 상단 모델에 적용시킵니다.
+    if api_key != user_api:
+        st.rerun()
 else:
-    st.warning("API Key를 입력해주세요. 그래야 다른 페이지에서 기능을 사용할 수 있습니다.")
-
-# --- 메인 화면 ---
-# 1. 타이틀 베이지 색상 적용
-
+    if not api_key:
+        st.warning("API Key를 입력해주세요. 그래야 다른 페이지에서 기능을 사용할 수 있습니다.")
